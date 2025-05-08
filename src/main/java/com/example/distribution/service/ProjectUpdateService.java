@@ -5,8 +5,10 @@ import com.example.distribution.dto.PagedProjectUpdateResponse;
 import com.example.distribution.dto.ProjectUpdateRequest;
 import com.example.distribution.dto.ProjectUpdateResponse;
 import com.example.distribution.entity.ProjectUpdate;
+import com.example.distribution.entity.User;
 import com.example.distribution.exception.ProjectUpdateNotFoundException;
 import com.example.distribution.repository.ProjectUpdateRepository;
+import com.example.distribution.repository.UserRepository;
 import com.example.distribution.util.ProjectUpdateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -23,8 +25,12 @@ public class ProjectUpdateService {
 
     @Autowired
     private ProjectUpdateRepository projectUpdateRepository;
+
     @Autowired
-    private NotificationService notificationService;
+    private UserRepository userRepository;
+
+    @Autowired
+    private EmailSenderService emailSenderService;
 
 
     public ProjectUpdateResponse createUpdate(ProjectUpdateRequest request) {
@@ -34,7 +40,9 @@ public class ProjectUpdateService {
         update.setTaggedUsers(request.getTaggedUsers());
 
         ProjectUpdate saved = projectUpdateRepository.save(update);
+        List<User> taggedUsers = userRepository.findByUsernameIn(request.getTaggedUsers());
 
+        emailSenderService.sendBulkEmails(taggedUsers, saved.getTitle(), saved.getContent());
         return ProjectUpdateMapper.mapToResponse(saved);
     }
 

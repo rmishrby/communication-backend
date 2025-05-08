@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -84,13 +85,30 @@ public class ProjectUpdateController {
         projectUpdateService.removeTaggedUsers(id, users);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Create a new user", description = "Adds a new user if the username doesn't already exist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User created successfully"),
+            @ApiResponse(responseCode = "409", description = "User already exists",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/user")
-    public ResponseEntity<?> adduser(@RequestBody UserRequest userRequest) {
-        if (!userRepository.existsById(userRequest.getUsername())) {
-            User user= new User(userRequest.getUsername(), userRequest.getEmail(), userRequest.getPhoneNumber());
-            userRepository.save(user);
-            return ResponseEntity.ok().body("success");
+    public ResponseEntity<?> createUser(@RequestBody UserRequest userRequest) {
+        if (userRepository.existsById(userRequest.getUsername())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ErrorResponse(409, "User already exists"));
         }
-        return ResponseEntity.ok().body("Already Exist");
+
+        User user = new User(
+                userRequest.getUsername(),
+                userRequest.getEmail(),
+                userRequest.getPhoneNumber()
+        );
+        userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
     }
+
 }
