@@ -1,9 +1,8 @@
 package com.example.distribution.contoller;
 
-import com.example.distribution.dto.ErrorResponse;
-import com.example.distribution.dto.PagedProjectUpdateResponse;
-import com.example.distribution.dto.ProjectUpdateRequest;
-import com.example.distribution.dto.ProjectUpdateResponse;
+import com.example.distribution.dto.*;
+import com.example.distribution.entity.User;
+import com.example.distribution.repository.UserRepository;
 import com.example.distribution.service.ProjectUpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -28,6 +27,9 @@ public class ProjectUpdateController {
 
     @Autowired
     private ProjectUpdateService projectUpdateService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Operation(summary = "Post a meeting note", description = "Returns a single meeting note")
     @ApiResponses(value = {
@@ -81,5 +83,14 @@ public class ProjectUpdateController {
     public ResponseEntity<?> removeTaggedUsers(@PathVariable Long id, @RequestBody @NotEmpty List<String> users) {
         projectUpdateService.removeTaggedUsers(id, users);
         return ResponseEntity.ok().build();
+    }
+    @PostMapping("/user")
+    public ResponseEntity<?> adduser(@RequestBody UserRequest userRequest) {
+        if (!userRepository.existsById(userRequest.getUsername())) {
+            User user= new User(userRequest.getUsername(), userRequest.getEmail(), userRequest.getPhoneNumber());
+            userRepository.save(user);
+            return ResponseEntity.ok().body("success");
+        }
+        return ResponseEntity.ok().body("Already Exist");
     }
 }
