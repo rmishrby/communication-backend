@@ -1,12 +1,16 @@
 package com.example.distribution.service;
 
 
+import com.example.distribution.dto.PagedProjectUpdateResponse;
 import com.example.distribution.dto.ProjectUpdateRequest;
 import com.example.distribution.dto.ProjectUpdateResponse;
 import com.example.distribution.entity.ProjectUpdate;
 import com.example.distribution.repository.ProjectUpdateRepository;
 import com.example.distribution.util.ProjectUpdateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,11 +37,23 @@ public class ProjectUpdateService {
         return ProjectUpdateMapper.mapToResponse(saved);
     }
 
-    public List<ProjectUpdateResponse> getAllUpdates() {
-        return projectUpdateRepository.findAllByOrderByCreatedAtDesc()
+
+    public PagedProjectUpdateResponse getAllUpdates(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProjectUpdate> updatePage = projectUpdateRepository.findAllByOrderByCreatedAtDesc(pageable);
+
+        List<ProjectUpdateResponse> responses = updatePage.getContent()
                 .stream()
                 .map(ProjectUpdateMapper::mapToResponse)
                 .collect(Collectors.toList());
+
+        PagedProjectUpdateResponse result = new PagedProjectUpdateResponse();
+        result.setUpdates(responses);
+        result.setCurrentPage(updatePage.getNumber());
+        result.setTotalPages(updatePage.getTotalPages());
+        result.setTotalElements(updatePage.getTotalElements());
+
+        return result;
     }
 }
 
