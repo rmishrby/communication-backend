@@ -32,5 +32,4 @@ public class ProjectUpdate {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters and Setters
 }
