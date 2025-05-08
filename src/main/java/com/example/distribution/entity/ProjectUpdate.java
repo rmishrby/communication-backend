@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Getter
@@ -25,8 +27,8 @@ public class ProjectUpdate {
 
     private LocalDateTime createdAt;
 
-    @ElementCollection
-    private List<String> taggedUsers;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<String> taggedUsers = new HashSet<>();
 
     public ProjectUpdate() {
         this.createdAt = LocalDateTime.now();

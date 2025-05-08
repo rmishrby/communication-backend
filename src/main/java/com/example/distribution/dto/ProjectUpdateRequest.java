@@ -3,6 +3,7 @@ package com.example.distribution.dto;
 import lombok.*;
 
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,5 +13,5 @@ import java.util.List;
 public class ProjectUpdateRequest {
     private String title;
     private String content;
-    private List<String> taggedUsers;
+    private Set<String> taggedUsers;
 }

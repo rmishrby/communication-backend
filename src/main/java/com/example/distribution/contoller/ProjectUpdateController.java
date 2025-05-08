@@ -11,10 +11,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotEmpty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/updates")
@@ -42,9 +45,21 @@ public class ProjectUpdateController {
     })
     @GetMapping
     public ResponseEntity<PagedProjectUpdateResponse> getUpdates(
-            @RequestParam(defaultValue = "1") @Min(value = 0, message = "page number should be a valid number with minimum value of 0") int page,
+            @RequestParam(defaultValue = "0") @Min(value = 0, message = "page number should be a valid number with minimum value of 0") int page,
             @RequestParam(defaultValue = "10") @Min(value = 1, message = "Page size should be a valid number with minimum value of 1") int size
     ) {
         return ResponseEntity.ok(projectUpdateService.getAllUpdates(page, size));
+    }
+
+    @PatchMapping("/{id}/tags/add")
+    public ResponseEntity<?> addTaggedUsers(@PathVariable Long id, @RequestBody @NotEmpty List<String> users ) {
+        projectUpdateService.addTaggedUsers(id, users);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{id}/tags/remove")
+    public ResponseEntity<?> removeTaggedUsers(@PathVariable Long id, @RequestBody @NotEmpty List<String> users) {
+        projectUpdateService.removeTaggedUsers(id, users);
+        return ResponseEntity.ok().build();
     }
 }

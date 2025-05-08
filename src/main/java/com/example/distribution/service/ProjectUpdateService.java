@@ -5,6 +5,7 @@ import com.example.distribution.dto.PagedProjectUpdateResponse;
 import com.example.distribution.dto.ProjectUpdateRequest;
 import com.example.distribution.dto.ProjectUpdateResponse;
 import com.example.distribution.entity.ProjectUpdate;
+import com.example.distribution.exception.ProjectUpdateNotFoundException;
 import com.example.distribution.repository.ProjectUpdateRepository;
 import com.example.distribution.util.ProjectUpdateMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,7 +34,6 @@ public class ProjectUpdateService {
         update.setTaggedUsers(request.getTaggedUsers());
 
         ProjectUpdate saved = projectUpdateRepository.save(update);
-        notificationService.notifyTaggedUsers(saved);
 
         return ProjectUpdateMapper.mapToResponse(saved);
     }
@@ -54,6 +55,26 @@ public class ProjectUpdateService {
         result.setTotalElements(updatePage.getTotalElements());
 
         return result;
+    }
+
+    public void addTaggedUsers(Long id, List<String> users) {
+        ProjectUpdate update = projectUpdateRepository.findById(id)
+                .orElseThrow(() -> new ProjectUpdateNotFoundException(id));
+
+        Set<String> tags = update.getTaggedUsers();
+        tags.addAll(users);
+        update.setTaggedUsers(tags);
+        projectUpdateRepository.save(update);
+    }
+
+    public void removeTaggedUsers(Long id, List<String> users) {
+        ProjectUpdate update = projectUpdateRepository.findById(id)
+                .orElseThrow(() -> new ProjectUpdateNotFoundException(id));
+
+        Set<String> tags = update.getTaggedUsers();
+        users.forEach(tags::remove);
+        update.setTaggedUsers(tags);
+        projectUpdateRepository.save(update);
     }
 }
 
