@@ -1,5 +1,6 @@
 package com.example.distribution.contoller;
 
+import com.example.distribution.dto.ErrorResponse;
 import com.example.distribution.dto.PagedProjectUpdateResponse;
 import com.example.distribution.dto.ProjectUpdateRequest;
 import com.example.distribution.dto.ProjectUpdateResponse;
@@ -51,11 +52,30 @@ public class ProjectUpdateController {
         return ResponseEntity.ok(projectUpdateService.getAllUpdates(page, size));
     }
 
+    @Operation(
+            summary = "Add tagged users to a project update",
+            description = "Adds one or more users to the tagged user list of a specific project update by ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tagged users added successfully"),
+            @ApiResponse(responseCode = "404", description = "Project update not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PatchMapping("/{id}/tags/add")
     public ResponseEntity<?> addTaggedUsers(@PathVariable Long id, @RequestBody @NotEmpty List<String> users ) {
         projectUpdateService.addTaggedUsers(id, users);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "Remove tagged users from a project update",
+            description = "Removes one or more users from the tagged user list of a specific project update by ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tagged users removed successfully"),
+            @ApiResponse(responseCode = "404", description = "Project update not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
 
     @PatchMapping("/{id}/tags/remove")
     public ResponseEntity<?> removeTaggedUsers(@PathVariable Long id, @RequestBody @NotEmpty List<String> users) {
