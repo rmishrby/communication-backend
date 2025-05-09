@@ -124,4 +124,14 @@ public class ProjectUpdateController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @Operation(summary = "Get all user", description = "find all the users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All users fetched successfully"),
+    })
+    @GetMapping("/user")
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return ResponseEntity.ok(users);
+    }
+
 }
