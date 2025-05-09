@@ -1,8 +1,10 @@
 package com.example.distribution.contoller;
 
 import com.example.distribution.dto.*;
+import com.example.distribution.entity.Meeting;
 import com.example.distribution.entity.User;
 import com.example.distribution.repository.UserRepository;
+import com.example.distribution.service.MeetingService;
 import com.example.distribution.service.ProjectUpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -32,7 +34,7 @@ public class ProjectUpdateController {
     @Autowired
     private UserRepository userRepository;
 
-    @Operation(summary = "Post a meeting note", description = "Returns a single meeting note")
+    @Operation(summary = "Post a project update", description = "Returns a single project")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successful operation", content = @Content(schema = @Schema(implementation = ProjectUpdateResponse.class))),
     })
