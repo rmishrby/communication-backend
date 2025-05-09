@@ -104,11 +104,24 @@ public class ProjectUpdateController {
         User user = new User(
                 userRequest.getUsername(),
                 userRequest.getEmail(),
-                userRequest.getPhoneNumber()
+                userRequest.getRole()
         );
         userRepository.save(user);
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
+    }
+
+    @Operation(summary = "Get a existing user", description = "Gets a new user if the username already exist")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User fetched successfully"),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/user/{username}")
+    public ResponseEntity<?> findUser(@PathVariable String username) {
+        return userRepository.findByUsername(username)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
 }
