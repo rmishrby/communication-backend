@@ -6,7 +6,7 @@ import com.example.distribution.dto.ProjectUpdateRequest;
 import com.example.distribution.dto.ProjectUpdateResponse;
 import com.example.distribution.entity.ProjectUpdate;
 import com.example.distribution.entity.User;
-import com.example.distribution.exception.ProjectUpdateNotFoundException;
+import com.example.distribution.exception.NotFoundException;
 import com.example.distribution.repository.ProjectUpdateRepository;
 import com.example.distribution.repository.UserRepository;
 import com.example.distribution.util.ProjectUpdateMapper;
@@ -67,7 +67,7 @@ public class ProjectUpdateService {
 
     public void addTaggedUsers(Long id, List<String> users) {
         ProjectUpdate update = projectUpdateRepository.findById(id)
-                .orElseThrow(() -> new ProjectUpdateNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("No project update with the id ", id));
 
         Set<String> tags = update.getTaggedUsers();
         tags.addAll(users);
@@ -77,7 +77,7 @@ public class ProjectUpdateService {
 
     public void removeTaggedUsers(Long id, List<String> users) {
         ProjectUpdate update = projectUpdateRepository.findById(id)
-                .orElseThrow(() -> new ProjectUpdateNotFoundException(id));
+                .orElseThrow(() -> new NotFoundException("No project update with the id ", id));
 
         Set<String> tags = update.getTaggedUsers();
         users.forEach(tags::remove);
