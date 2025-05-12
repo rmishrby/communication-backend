@@ -3,6 +3,7 @@ package com.example.distribution.controller;
 import com.example.distribution.dto.*;
 import com.example.distribution.entity.User;
 import com.example.distribution.repository.UserRepository;
+import com.example.distribution.service.EmailSenderService;
 import com.example.distribution.service.ProjectUpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,8 @@ import java.util.List;
 @CrossOrigin
 @Validated
 public class ProjectUpdateController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProjectUpdateController.class);
 
     @Autowired
     private ProjectUpdateService projectUpdateService;
@@ -113,6 +118,7 @@ public class ProjectUpdateController {
     })
     @GetMapping("/users/{username}")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username) {
+        logger.info("indisde contoller: {}",username);
         return userRepository.findByUsername(username)
                 .<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
