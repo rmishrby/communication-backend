@@ -1,4 +1,4 @@
-package com.example.distribution.contoller;
+package com.example.distribution.controller;
 
 import com.example.distribution.dto.*;
 import com.example.distribution.service.ProjectService;
