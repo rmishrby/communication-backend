@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,8 @@ import java.util.List;
 @RequestMapping("/api/v1/projects")
 public class ProjectController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
+
     @Autowired
     private ProjectService projectService;
 
@@ -29,7 +33,9 @@ public class ProjectController {
     })
     @PostMapping
     public ResponseEntity<ProjectResponse> createProject(@RequestBody ProjectRequest request) {
+        logger.info("Creating project: {}", request.getTitle());
         ProjectResponse response = projectService.createProject(request);
+        logger.info("Project created with ID: {}", response.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -39,7 +45,9 @@ public class ProjectController {
     })
     @GetMapping
     public ResponseEntity<List<ProjectSummaryResponse>> getAllProjects() {
+        logger.info("Fetching all projects");
         List<ProjectSummaryResponse> projects = projectService.getAllProjectsSummary();
+        logger.info("Found {} projects", projects.size());
         return ResponseEntity.ok(projects);
     }
 
@@ -50,7 +58,9 @@ public class ProjectController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<ProjectDetailResponse> getProjectById(@PathVariable Long id) {
+        logger.info("Fetching project by ID: {}", id);
         ProjectDetailResponse response = projectService.getProjectById(id);
+        logger.info("Project details retrieved for ID: {}", id);
         return ResponseEntity.ok(response);
     }
 }

@@ -3,7 +3,6 @@ package com.example.distribution.controller;
 import com.example.distribution.dto.*;
 import com.example.distribution.entity.User;
 import com.example.distribution.repository.UserRepository;
-import com.example.distribution.service.EmailSenderService;
 import com.example.distribution.service.ProjectUpdateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,8 +35,6 @@ public class ProjectUpdateController {
     @Autowired
     private UserRepository userRepository;
 
-    // === Project Update APIs ===
-
     @Operation(summary = "Create project update", description = "Create a new update for a specific project")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Project update created successfully", content = @Content(schema = @Schema(implementation = ProjectUpdateResponse.class))),
@@ -48,6 +45,7 @@ public class ProjectUpdateController {
     public ResponseEntity<ProjectUpdateResponse> createProjectUpdate(
             @PathVariable Long projectId,
             @RequestBody ProjectUpdateRequest request) {
+        logger.info("Creating project update for project ID: {}", projectId);
         return ResponseEntity.ok(projectUpdateService.createUpdate(projectId, request));
     }
 
@@ -59,6 +57,7 @@ public class ProjectUpdateController {
     public ResponseEntity<PagedProjectUpdateResponse> getAllProjectUpdates(
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size) {
+        logger.info("Fetching all project updates: page={}, size={}", page, size);
         return ResponseEntity.ok(projectUpdateService.getAllUpdates(page, size));
     }
 
@@ -72,6 +71,7 @@ public class ProjectUpdateController {
     public ResponseEntity<Void> addTaggedUsers(
             @PathVariable Long updateId,
             @RequestBody @NotEmpty List<String> users) {
+        logger.info("Adding tagged users to update ID: {}, users: {}", updateId, users);
         projectUpdateService.addTaggedUsers(updateId, users);
         return ResponseEntity.ok().build();
     }
@@ -86,11 +86,10 @@ public class ProjectUpdateController {
     public ResponseEntity<Void> removeTaggedUsers(
             @PathVariable Long updateId,
             @RequestBody @NotEmpty List<String> users) {
+        logger.info("Removing tagged users from update ID: {}, users: {}", updateId, users);
         projectUpdateService.removeTaggedUsers(updateId, users);
         return ResponseEntity.ok().build();
     }
-
-    // === User APIs ===
 
     @Operation(summary = "Create user", description = "Register a new user")
     @ApiResponses({
@@ -100,13 +99,16 @@ public class ProjectUpdateController {
     })
     @PostMapping("/users")
     public ResponseEntity<?> createUser(@RequestBody UserRequest request) {
+        logger.info("Creating user: {}", request.getUsername());
         if (userRepository.existsById(request.getUsername())) {
+            logger.warn("User already exists: {}", request.getUsername());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ErrorResponse(409, "User already exists"));
         }
 
         User user = new User(request.getUsername(), request.getEmail(), request.getRole());
         userRepository.save(user);
+        logger.info("User created successfully: {}", request.getUsername());
 
         return ResponseEntity.status(HttpStatus.CREATED).body("User created successfully");
     }
@@ -118,10 +120,17 @@ public class ProjectUpdateController {
     })
     @GetMapping("/users/{username}")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username) {
+        logger.info("Fetching user by username: {}", username);
         return userRepository.findByUsername(username)
-                .<ResponseEntity<Object>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(new ErrorResponse(404, "User not found")));
+                .<ResponseEntity<Object>>map(user -> {
+                    logger.info("User found: {}", username);
+                    return ResponseEntity.ok(user);
+                })
+                .orElseGet(() -> {
+                    logger.warn("User not found: {}", username);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                            .body(new ErrorResponse(404, "User not found"));
+                });
     }
 
     @Operation(summary = "List all users", description = "Retrieve all registered users")
@@ -130,6 +139,7 @@ public class ProjectUpdateController {
     })
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
+        logger.info("Fetching all users");
         return ResponseEntity.ok(userRepository.findAll());
     }
 }

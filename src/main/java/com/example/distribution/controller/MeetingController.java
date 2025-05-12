@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,8 @@ import java.util.List;
 @Validated
 public class MeetingController {
 
+    private static final Logger logger = LoggerFactory.getLogger(MeetingController.class);
+
     @Autowired
     private MeetingService meetingService;
 
@@ -33,7 +37,9 @@ public class MeetingController {
     })
     @PostMapping
     public ResponseEntity<MeetingResponseDto> createMeeting(@RequestBody MeetingDto meetingDto) {
+        logger.info("Creating meeting: {}", meetingDto);
         MeetingResponseDto response = meetingService.createMeeting(meetingDto);
+        logger.info("Meeting created with ID: {}", response.getId());
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -44,7 +50,9 @@ public class MeetingController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<MeetingResponseDto> updateMeeting(@PathVariable Long id, @RequestBody MeetingDto dto) {
+        logger.info("Updating meeting ID: {}", id);
         MeetingResponseDto response = meetingService.updateMeeting(id, dto);
+        logger.info("Meeting updated: {}", response.getId());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -55,7 +63,9 @@ public class MeetingController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMeeting(@PathVariable Long id) {
+        logger.info("Deleting meeting ID: {}", id);
         meetingService.deleteMeeting(id);
+        logger.info("Meeting deleted successfully: {}", id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -65,7 +75,9 @@ public class MeetingController {
     })
     @GetMapping
     public ResponseEntity<List<MeetingResponseDto>> getAllMeetings() {
-        return new ResponseEntity<>(meetingService.getAllMeetings(), HttpStatus.OK);
+        logger.info("Fetching all meeting notes");
+        List<MeetingResponseDto> meetings = meetingService.getAllMeetings();
+        logger.info("Total meetings retrieved: {}", meetings.size());
+        return new ResponseEntity<>(meetings, HttpStatus.OK);
     }
-
 }
