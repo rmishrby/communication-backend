@@ -118,7 +118,6 @@ public class ProjectUpdateController {
     })
     @GetMapping("/users/{username}")
     public ResponseEntity<Object> getUserByUsername(@PathVariable String username) {
-        logger.info("indisde contoller: {}",username);
         return userRepository.findByUsername(username)
                 .<ResponseEntity<Object>>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
