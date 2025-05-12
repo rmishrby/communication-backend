@@ -4,9 +4,11 @@ package com.example.distribution.service;
 import com.example.distribution.dto.PagedProjectUpdateResponse;
 import com.example.distribution.dto.ProjectUpdateRequest;
 import com.example.distribution.dto.ProjectUpdateResponse;
+import com.example.distribution.entity.Project;
 import com.example.distribution.entity.ProjectUpdate;
 import com.example.distribution.entity.User;
 import com.example.distribution.exception.NotFoundException;
+import com.example.distribution.repository.ProjectRepository;
 import com.example.distribution.repository.ProjectUpdateRepository;
 import com.example.distribution.repository.UserRepository;
 import com.example.distribution.util.ProjectUpdateMapper;
@@ -32,20 +34,26 @@ public class ProjectUpdateService {
     @Autowired
     private EmailSenderService emailSenderService;
 
+    @Autowired
+    private ProjectRepository projectRepository;
 
-    public ProjectUpdateResponse createUpdate(ProjectUpdateRequest request) {
+    public ProjectUpdateResponse createUpdate(Long projectId, ProjectUpdateRequest request) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException("Project not found", projectId));
+
         ProjectUpdate update = new ProjectUpdate();
         update.setTitle(request.getTitle());
         update.setContent(request.getContent());
         update.setTaggedUsers(request.getTaggedUsers());
+        update.setProject(project);
 
         ProjectUpdate saved = projectUpdateRepository.save(update);
-        List<User> taggedUsers = userRepository.findByUsernameIn(request.getTaggedUsers());
 
+        List<User> taggedUsers = userRepository.findByUsernameIn(request.getTaggedUsers());
         emailSenderService.sendBulkEmails(taggedUsers, saved.getTitle(), saved.getContent());
+
         return ProjectUpdateMapper.mapToResponse(saved);
     }
-
 
     public PagedProjectUpdateResponse getAllUpdates(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);

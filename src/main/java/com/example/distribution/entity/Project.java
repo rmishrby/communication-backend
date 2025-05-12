@@ -4,26 +4,23 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectUpdate {
+public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
-    private String content;
+    private String description;
+    private String createdBy;
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> taggedUsers = new HashSet<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id")
-    private Project project;
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectUpdate> updates = new ArrayList<>();
 }
-
