@@ -32,6 +32,7 @@ public class MeetingService {
         meeting.setTitle(dto.getTitle());
         meeting.setCreatedAt(LocalDateTime.now());
         meeting.setNotes(dto.getNotes());
+        meeting.setCreatedBy(dto.getCreatedBy());
 
         List<ActionItem> items = dto.getActionItems().stream().map(itemDto -> {
             ActionItem item = new ActionItem();
@@ -60,7 +61,6 @@ public class MeetingService {
         meeting.setTitle(dto.getTitle());
         meeting.setCreatedAt(LocalDateTime.now());
         meeting.setNotes(dto.getNotes());
-
         meeting.getActionItems().clear();
         List<ActionItem> items = dto.getActionItems().stream().map(itemDto -> {
             ActionItem item = new ActionItem();
@@ -89,13 +89,13 @@ public class MeetingService {
         logger.info("Meeting deleted with ID: {}", id);
     }
 
-    public List<MeetingResponseDto> getAllMeetings() {
-        logger.info("Fetching all meetings");
-        List<MeetingResponseDto> meetings = meetingRepository.findAll()
+    public List<MeetingResponseDto> getMeetingsByUsername(String username) {
+        logger.info("Fetching meetings for username: {}", username);
+        List<MeetingResponseDto> meetings = meetingRepository.findByCreatedBy(username)
                 .stream()
                 .map(MeetingResponseMapper::toResponseDto)
                 .toList();
-        logger.info("Total meetings found: {}", meetings.size());
+        logger.info("Total meetings found for {}: {}", username, meetings.size());
         return meetings;
     }
 }

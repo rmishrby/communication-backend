@@ -15,6 +15,7 @@ public class MeetingResponseDto {
     private String title;
     private LocalDateTime createdAt;
     private String notes;
+    private String createdBy;
     private List<ActionItemDto> actionItems;
 
     @NoArgsConstructor

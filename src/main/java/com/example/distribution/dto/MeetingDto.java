@@ -13,6 +13,7 @@ public class MeetingDto {
     private String title;
     private String notes;
     private List<ActionItemDto> actionItems;
+    private String createdBy;
 
     @NoArgsConstructor
     @AllArgsConstructor

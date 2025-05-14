@@ -73,10 +73,10 @@ public class MeetingController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Successfully retrieved", content = @Content(array = @ArraySchema(schema = @Schema(implementation = MeetingResponseDto.class))))
     })
-    @GetMapping
-    public ResponseEntity<List<MeetingResponseDto>> getAllMeetings() {
+    @GetMapping("/{username}")
+    public ResponseEntity<List<MeetingResponseDto>> getAllMeetings(@PathVariable String username) {
         logger.info("Fetching all meeting notes");
-        List<MeetingResponseDto> meetings = meetingService.getAllMeetings();
+        List<MeetingResponseDto> meetings = meetingService.getMeetingsByUsername(username);
         logger.info("Total meetings retrieved: {}", meetings.size());
         return new ResponseEntity<>(meetings, HttpStatus.OK);
     }

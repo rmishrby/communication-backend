@@ -22,6 +22,7 @@ public class MeetingResponseMapper {
         dto.setTitle(meeting.getTitle());
         dto.setCreatedAt(meeting.getCreatedAt());
         dto.setNotes(meeting.getNotes());
+        dto.setCreatedBy(meeting.getCreatedBy());
 
         List<MeetingResponseDto.ActionItemDto> itemDtos = meeting.getActionItems().stream().map(item -> {
             MeetingResponseDto.ActionItemDto aid = new MeetingResponseDto.ActionItemDto();

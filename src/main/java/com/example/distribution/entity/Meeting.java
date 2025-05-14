@@ -21,6 +21,7 @@ public class Meeting {
     private String title;
     private LocalDateTime createdAt;
     private String notes;
+    private String createdBy;
 
     @OneToMany(mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ActionItem> actionItems;
