@@ -90,7 +90,11 @@
             <artifactId>hibernate-search-backend-lucene</artifactId>
             <version>7.2.1.Final</version>
         </dependency>
-
+		<dependency>
+			<groupId>com.google.firebase</groupId>
+			<artifactId>firebase-admin</artifactId>
+			<version>9.2.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
