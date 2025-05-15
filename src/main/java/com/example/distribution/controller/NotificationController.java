@@ -33,7 +33,6 @@ public class NotificationController {
     @PostMapping("/subscribe")
     public ResponseEntity<?> subscribe(@RequestBody SubscribeRequest request) {
         tokens.put(request.getUserId(), request.getToken());
-        logger.info("tokens :", toString());
         notifications.putIfAbsent(request.getUserId(), new ArrayList<>());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
